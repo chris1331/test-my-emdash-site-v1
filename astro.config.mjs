@@ -7,6 +7,7 @@ import emdash from "emdash/astro";
 export default defineConfig({
 	output: "server",
 	adapter: cloudflare(),
+	site: "https://blog.burgergelato.com",
 	image: {
 		layout: "constrained",
 		responsiveStyles: true,
@@ -23,7 +24,7 @@ export default defineConfig({
 			provider: fontProviders.google(),
 			name: "Inter",
 			cssVariable: "--font-body",
-			weights: [400, 500, 600, 700],
+			weights: [400, 500, 600, 700, 800],
 			fallbacks: ["sans-serif"],
 		},
 		{

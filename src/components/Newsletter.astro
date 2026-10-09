@@ -1,0 +1,137 @@
+---
+interface Props {
+  variant?: 'hero' | 'inline';
+}
+const { variant = 'inline' } = Astro.props;
+---
+
+{
+  variant === 'hero' && (
+    <section class="newsletter-hero">
+      <div class="newsletter-hero-inner">
+        <h2 class="newsletter-hero-title">
+          Great at what you do. Invisible online.
+        </h2>
+        <p class="newsletter-hero-subtitle">
+          Turn what you know into content that gets found, gets watched, and gets clients.
+        </p>
+        <a
+          href="https://burgergelato.com/get-5-min-video?utm_source=blog&utm_medium=hero&utm_campaign=5min-video"
+          class="newsletter-hero-btn"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Get Your Free 5-Minute Video
+        </a>
+      </div>
+    </section>
+  )
+}
+
+{
+  variant === 'inline' && (
+    <div class="newsletter-inline">
+      <h3 class="newsletter-inline-title">Want to see what this looks like for your business?</h3>
+      <p class="newsletter-inline-subtitle">
+        Get a free 5-minute video showing how Expert Insight Sessions can turn your expertise into content that works.
+      </p>
+      <a
+        href="https://burgergelato.com/get-5-min-video?utm_source=blog&utm_medium=post-footer-card&utm_campaign=5min-video"
+        class="newsletter-inline-btn"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Get My Free Video
+      </a>
+    </div>
+  )
+}
+
+<style>
+  .newsletter-hero {
+    background: linear-gradient(135deg, #111827 0%, #0d1117 100%);
+    padding: 3.5rem 1rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .newsletter-hero-inner {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .newsletter-hero-title {
+    color: #ffffff;
+    font-size: clamp(1.85rem, 4vw, 2.5rem);
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 0.85rem;
+    letter-spacing: -0.02em;
+  }
+
+  .newsletter-hero-subtitle {
+    color: #9ca3af;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    margin-bottom: 2rem;
+  }
+
+  .newsletter-hero-btn {
+    display: inline-block;
+    padding: 0.85rem 2rem;
+    background: var(--color-brand, #E5172F);
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 4px 14px rgba(229, 23, 47, 0.35);
+  }
+
+  .newsletter-hero-btn:hover {
+    background: var(--color-brand-hover, #C01225);
+    transform: translateY(-2px);
+  }
+
+  .newsletter-inline {
+    background: linear-gradient(135deg, #111827 0%, #1f2937 100%);
+    border-radius: var(--radius-lg, 16px);
+    padding: 2.25rem 1.5rem;
+    text-align: center;
+    color: #ffffff;
+  }
+
+  .newsletter-inline-title {
+    color: #ffffff;
+    font-size: 1.45rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+
+  .newsletter-inline-subtitle {
+    color: #9ca3af;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    margin-bottom: 1.5rem;
+    max-width: 520px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .newsletter-inline-btn {
+    display: inline-block;
+    padding: 0.75rem 1.75rem;
+    background: var(--color-brand, #E5172F);
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background 0.2s ease;
+  }
+
+  .newsletter-inline-btn:hover {
+    background: var(--color-brand-hover, #C01225);
+  }
+</style>

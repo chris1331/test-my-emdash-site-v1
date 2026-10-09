@@ -1,0 +1,180 @@
+---
+import {
+  getEmDashCollection,
+  getTaxonomyTermsWithCacheHint,
+} from "emdash";
+import Base from "../../layouts/Base.astro";
+
+const [postsResult, termsResult] = await Promise.all([
+  getEmDashCollection("posts", { limit: 100 }),
+  getTaxonomyTermsWithCacheHint("category", { includeCounts: true }),
+]);
+
+if (Astro.cache?.enabled) {
+  Astro.cache.set(postsResult.cacheHint);
+  Astro.cache.set(termsResult.cacheHint);
+}
+
+const posts = postsResult.entries;
+const categories = termsResult.data || [];
+
+const categoryColors: Record<string, { bg: string; text: string; border: string }> = {
+  seo: { bg: "#ecfdf5", text: "#047857", border: "#a7f3d0" },
+  "paid-ads": { bg: "#eff6ff", text: "#1d4ed8", border: "#bfdbfe" },
+  "digital-strategy": { bg: "#f5f3ff", text: "#6d28d9", border: "#ddd6fe" },
+  "marketing-automation": { bg: "#fffbeb", text: "#b45309", border: "#fde68a" },
+  "ai-content": { bg: "#ecfeff", text: "#0e7490", border: "#a5f3fc" },
+  "email-marketing": { bg: "#fff1f2", text: "#be123c", border: "#fecdd3" },
+};
+---
+
+<Base
+  title="Categories"
+  description="Browse all digital marketing topics covered on the Burger Gelato Media blog."
+>
+  <section class="categories-hero">
+    <div class="categories-hero-inner">
+      <h1 class="categories-title">Categories</h1>
+      <p class="categories-subtitle">
+        Browse by topic and find exactly what you need.
+      </p>
+    </div>
+  </section>
+
+  <div class="categories-container">
+    <div class="categories-grid">
+      {
+        categories.map((cat) => {
+          const colors = categoryColors[cat.slug] || {
+            bg: "#f9fafb",
+            text: "#374151",
+            border: "#e5e7eb",
+          };
+          const count =
+            cat.count ??
+            posts.filter((p) =>
+              p.data.terms?.category?.some((c) => c.slug === cat.slug)
+            ).length;
+
+          return (
+            <a
+              href={`/categories/${cat.slug}`}
+              class="category-card"
+              style={`background-color: ${colors.bg}; border-color: ${colors.border};`}
+            >
+              <div>
+                <span class="category-name" style={`color: ${colors.text};`}>
+                  {cat.label}
+                </span>
+                <p class="category-count">
+                  {count} article{count !== 1 ? "s" : ""}
+                </p>
+              </div>
+              <svg
+                class="category-arrow"
+                style={`color: ${colors.text};`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </a>
+          );
+        })
+      }
+    </div>
+  </div>
+</Base>
+
+<style>
+  .categories-hero {
+    background: #111827;
+    padding: 3.5rem 1rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .categories-hero-inner {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .categories-title {
+    color: #ffffff;
+    font-size: clamp(2.25rem, 5vw, 3.25rem);
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.025em;
+  }
+
+  .categories-subtitle {
+    color: #9ca3af;
+    font-size: 1.125rem;
+    line-height: 1.5;
+  }
+
+  .categories-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 3.5rem 1.25rem;
+  }
+
+  .categories-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  @media (min-width: 640px) {
+    .categories-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .category-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.75rem;
+    border-radius: var(--radius-lg, 16px);
+    border: 1px solid;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .category-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+  }
+
+  .category-name {
+    font-size: 1.35rem;
+    font-weight: 700;
+    display: block;
+    line-height: 1.2;
+  }
+
+  .category-count {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin-top: 0.35rem;
+  }
+
+  .category-arrow {
+    width: 1.5rem;
+    height: 1.5rem;
+    opacity: 0.7;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+
+  .category-card:hover .category-arrow {
+    opacity: 1;
+    transform: translateX(4px);
+  }
+</style>

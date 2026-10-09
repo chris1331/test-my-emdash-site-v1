@@ -1,0 +1,169 @@
+---
+import {
+  getTaxonomyTermsWithCacheHint,
+  getEmDashCollection,
+} from "emdash";
+import Base from "../../layouts/Base.astro";
+import PostCard from "../../components/PostCard.astro";
+
+const { category } = Astro.params;
+const termsResult = await getTaxonomyTermsWithCacheHint("category", {
+  includeCounts: false,
+});
+
+const term = category
+  ? termsResult.data.find((item) => item.slug === category)
+  : null;
+
+if (!term) {
+  return Astro.redirect("/404");
+}
+
+const { entries: posts, cacheHint } = await getEmDashCollection("posts", {
+  where: { category: term.slug },
+  orderBy: { published_at: "desc" },
+  limit: 50,
+});
+
+if (Astro.cache?.enabled) {
+  Astro.cache.set(termsResult.cacheHint);
+  Astro.cache.set(cacheHint);
+}
+---
+
+<Base
+  title={`${term.label} Articles`}
+  description={`All posts about ${term.label} from Burger Gelato Media.`}
+>
+  <!-- Header -->
+  <section class="category-detail-hero">
+    <div class="category-detail-inner">
+      <a href="/categories" class="back-link">
+        <svg
+          class="back-arrow"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 19l-7-7 7-7"
+          />
+        </svg>
+        All categories
+      </a>
+      <h1 class="category-detail-title">{term.label}</h1>
+      <p class="category-detail-count">
+        {posts.length} article{posts.length !== 1 ? "s" : ""}
+      </p>
+    </div>
+  </section>
+
+  <!-- Posts Grid -->
+  <div class="category-detail-container">
+    {
+      posts.length === 0 ? (
+        <div class="empty-notice">
+          <p>No articles found in this category yet.</p>
+        </div>
+      ) : (
+        <div class="posts-grid">
+          {posts.map((post) => {
+            const cats = post.data.terms?.category?.map((t) => t.label) || [];
+            return (
+              <PostCard
+                title={post.data.title}
+                excerpt={post.data.excerpt}
+                slug={post.id}
+                featuredImage={post.data.featured_image}
+                date={post.data.publishedAt || post.data.createdAt}
+                category={cats.length > 0 ? cats : [term.label]}
+                bylines={post.data.bylines}
+                edit={post.edit}
+              />
+            );
+          })}
+        </div>
+      )
+    }
+  </div>
+</Base>
+
+<style>
+  .category-detail-hero {
+    background: #111827;
+    padding: 3.5rem 1rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .category-detail-inner {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: #9ca3af;
+    font-size: 0.875rem;
+    text-decoration: none;
+    margin-bottom: 1rem;
+    transition: color 0.15s ease;
+  }
+
+  .back-link:hover {
+    color: var(--color-brand, #E5172F);
+  }
+
+  .back-arrow {
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .category-detail-title {
+    color: #ffffff;
+    font-size: clamp(2.25rem, 5vw, 3.25rem);
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.025em;
+  }
+
+  .category-detail-count {
+    color: #9ca3af;
+    font-size: 1rem;
+  }
+
+  .category-detail-container {
+    max-width: var(--wide-width, 1180px);
+    margin: 0 auto;
+    padding: 3rem 1.25rem;
+  }
+
+  .posts-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .posts-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .posts-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .empty-notice {
+    text-align: center;
+    padding: 3rem;
+    color: var(--color-muted, #6b7280);
+  }
+</style>

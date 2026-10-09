@@ -1,0 +1,182 @@
+---
+import {
+  getEmDashCollection,
+  getTaxonomyTermsWithCacheHint,
+} from "emdash";
+import Base from "../layouts/Base.astro";
+import PostCard from "../components/PostCard.astro";
+
+const [postsResult, termsResult] = await Promise.all([
+  getEmDashCollection("posts", {
+    orderBy: { published_at: "desc" },
+    limit: 100,
+  }),
+  getTaxonomyTermsWithCacheHint("category", { includeCounts: true }),
+]);
+
+if (Astro.cache?.enabled) {
+  Astro.cache.set(postsResult.cacheHint);
+  Astro.cache.set(termsResult.cacheHint);
+}
+
+const posts = postsResult.entries;
+const totalCount = posts.length;
+const categories = termsResult.data || [];
+---
+
+<Base
+  title="Archive — All Posts"
+  description="Browse every article on digital marketing, SEO, paid ads, and business strategy from Burger Gelato Media."
+>
+  <!-- Page Header -->
+  <section class="archive-hero">
+    <div class="archive-hero-inner">
+      <h1 class="archive-title">Archive</h1>
+      <p class="archive-subtitle">
+        Dive into a collection of past posts and endless timeless content.
+      </p>
+      <p class="archive-count">{totalCount} articles and counting</p>
+    </div>
+  </section>
+
+  <!-- Sticky Filter Bar -->
+  <section class="archive-filter-bar">
+    <div class="archive-filter-inner">
+      <a href="/archive" class="filter-pill active">
+        All ({totalCount})
+      </a>
+      {
+        categories.map((cat) => {
+          const count = cat.count ?? posts.filter(p => p.data.terms?.category?.some(c => c.slug === cat.slug)).length;
+          return (
+            <a href={`/categories/${cat.slug}`} class="filter-pill">
+              {cat.label} ({count})
+            </a>
+          );
+        })
+      }
+    </div>
+  </section>
+
+  <!-- Posts Grid -->
+  <div class="archive-container">
+    <div class="posts-grid">
+      {
+        posts.map((post) => {
+          const cats = post.data.terms?.category?.map((t) => t.label) || [];
+          return (
+            <PostCard
+              title={post.data.title}
+              excerpt={post.data.excerpt}
+              slug={post.id}
+              featuredImage={post.data.featured_image}
+              date={post.data.publishedAt || post.data.createdAt}
+              category={cats.length > 0 ? cats : "Article"}
+              bylines={post.data.bylines}
+              edit={post.edit}
+            />
+          );
+        })
+      }
+    </div>
+  </div>
+</Base>
+
+<style>
+  .archive-hero {
+    background: #111827;
+    padding: 3.5rem 1rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .archive-hero-inner {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .archive-title {
+    color: #ffffff;
+    font-size: clamp(2.25rem, 5vw, 3.25rem);
+    font-weight: 800;
+    margin-bottom: 0.75rem;
+    letter-spacing: -0.025em;
+  }
+
+  .archive-subtitle {
+    color: #9ca3af;
+    font-size: 1.125rem;
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+  }
+
+  .archive-count {
+    color: #6b7280;
+    font-size: 0.875rem;
+  }
+
+  .archive-filter-bar {
+    position: sticky;
+    top: 4rem;
+    z-index: 40;
+    background: var(--color-surface, #ffffff);
+    border-bottom: 1px solid var(--color-border, #e5e7eb);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  }
+
+  .archive-filter-inner {
+    max-width: var(--wide-width, 1180px);
+    margin: 0 auto;
+    padding: 0.75rem 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+  }
+
+  .filter-pill {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    border: 1px solid var(--color-border, #e5e7eb);
+    color: var(--color-text-secondary, #374151);
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .filter-pill:hover {
+    border-color: var(--color-brand, #E5172F);
+    color: var(--color-brand, #E5172F);
+  }
+
+  .filter-pill.active {
+    background: #111827;
+    color: #ffffff;
+    border-color: #111827;
+  }
+
+  .archive-container {
+    max-width: var(--wide-width, 1180px);
+    margin: 0 auto;
+    padding: 3rem 1.25rem;
+  }
+
+  .posts-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  @media (min-width: 640px) {
+    .posts-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .posts-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

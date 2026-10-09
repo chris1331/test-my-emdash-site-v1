@@ -1,0 +1,379 @@
+---
+import LiveSearch from "emdash/ui/search";
+
+interface Props {
+  currentPath?: string;
+  isLoggedIn?: boolean;
+}
+
+const { currentPath = Astro.url.pathname, isLoggedIn = false } = Astro.props;
+
+const navLinks = [
+  { href: "/", label: "Home" },
+  { href: "/archive", label: "Archive" },
+  { href: "/categories", label: "Categories" },
+];
+
+function isActive(href: string) {
+  if (href === "/") return currentPath === "/";
+  return currentPath.startsWith(href);
+}
+---
+
+<header class="bgm-header">
+  <div class="bgm-header-container">
+    <div class="bgm-header-inner">
+      <!-- Logo -->
+      <a href="/" class="bgm-logo" aria-label="Burger Gelato Media Home">
+        <img
+          src="/images/logo/logo.png"
+          alt="Burger Gelato Media"
+          class="bgm-logo-img"
+        />
+        <div class="bgm-logo-text">
+          <span class="bgm-brand-name">Burger Gelato</span>
+          <span class="bgm-brand-tag">Media</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav -->
+      <nav class="bgm-nav" aria-label="Main navigation">
+        {
+          navLinks.map((link) => (
+            <a
+              href={link.href}
+              class={`bgm-nav-link ${isActive(link.href) ? "active" : ""}`}
+            >
+              {link.label}
+            </a>
+          ))
+        }
+      </nav>
+
+      <!-- Right Actions: Search + CTA + Admin + Mobile toggle -->
+      <div class="bgm-header-actions">
+        <!-- Live Search -->
+        <div class="bgm-search-wrap">
+          <LiveSearch
+            placeholder="Search posts..."
+            class="site-search"
+            inputClass="bgm-search-input"
+            resultsClass="bgm-search-results"
+            resultClass="bgm-search-result"
+            collections={["posts", "pages"]}
+          />
+        </div>
+
+        {
+          isLoggedIn && (
+            <a href="/_emdash/admin" class="bgm-admin-link">
+              Admin
+            </a>
+          )
+        }
+
+        <a
+          href="https://burgergelato.com"
+          class="bgm-cta-btn"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Work with Us
+        </a>
+
+        <!-- Mobile hamburger button -->
+        <button
+          id="mobile-menu-btn"
+          class="bgm-mobile-btn"
+          aria-label="Toggle mobile menu"
+          aria-expanded="false"
+        >
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+          <span class="hamburger-bar"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Dropdown Menu -->
+  <div id="mobile-menu" class="bgm-mobile-menu hidden">
+    <nav class="bgm-mobile-nav">
+      {
+        navLinks.map((link) => (
+          <a
+            href={link.href}
+            class={`bgm-mobile-link ${isActive(link.href) ? "active" : ""}`}
+          >
+            {link.label}
+          </a>
+        ))
+      }
+      {
+        isLoggedIn && (
+          <a href="/_emdash/admin" class="bgm-mobile-link">
+            Admin Panel
+          </a>
+        )
+      }
+      <a
+        href="https://burgergelato.com"
+        class="bgm-mobile-cta"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Work with Us
+      </a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .bgm-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: #111827;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+  }
+
+  .bgm-header-container {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+  }
+
+  .bgm-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 4rem;
+    gap: 1.5rem;
+  }
+
+  .bgm-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  .bgm-logo-img {
+    height: 2.25rem;
+    width: 2.25rem;
+    object-fit: contain;
+  }
+
+  .bgm-logo-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bgm-brand-name {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1.125rem;
+    line-height: 1.1;
+  }
+
+  .bgm-brand-tag {
+    color: var(--color-brand, #E5172F);
+    font-size: 0.6875rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .bgm-nav {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .bgm-nav {
+      display: flex;
+    }
+  }
+
+  .bgm-nav-link {
+    padding: 0.5rem 0.85rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #9ca3af;
+    text-decoration: none;
+    transition: all 0.15s ease;
+  }
+
+  .bgm-nav-link:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.06);
+  }
+
+  .bgm-nav-link.active {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .bgm-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .bgm-search-wrap {
+    width: 160px;
+  }
+
+  @media (max-width: 640px) {
+    .bgm-search-wrap {
+      display: none;
+    }
+  }
+
+  :global(.bgm-search-input) {
+    width: 100%;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.8125rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
+    transition: all 0.2s ease;
+  }
+
+  :global(.bgm-search-input::placeholder) {
+    color: rgba(255, 255, 255, 0.4);
+  }
+
+  :global(.bgm-search-input:focus) {
+    outline: none;
+    border-color: var(--color-brand, #E5172F) !important;
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 0 0 2px rgba(229, 23, 47, 0.25);
+  }
+
+  .bgm-admin-link {
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #9ca3af;
+    text-decoration: none;
+    padding: 0.4rem 0.65rem;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.15s ease;
+  }
+
+  .bgm-admin-link:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .bgm-cta-btn {
+    display: none;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: var(--color-brand, #E5172F);
+    color: #ffffff !important;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.2s ease;
+    white-space: nowrap;
+  }
+
+  @media (min-width: 640px) {
+    .bgm-cta-btn {
+      display: inline-flex;
+    }
+  }
+
+  .bgm-cta-btn:hover {
+    background: var(--color-brand-hover, #C01225);
+  }
+
+  .bgm-mobile-btn {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.5rem;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  @media (min-width: 768px) {
+    .bgm-mobile-btn {
+      display: none;
+    }
+  }
+
+  .hamburger-bar {
+    width: 1.25rem;
+    height: 2px;
+    background: #ffffff;
+    border-radius: 2px;
+    transition: all 0.2s ease;
+  }
+
+  .bgm-mobile-menu {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: #111827;
+  }
+
+  .bgm-mobile-menu.hidden {
+    display: none;
+  }
+
+  .bgm-mobile-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.75rem 1.25rem 1.25rem;
+    max-width: 1180px;
+    margin: 0 auto;
+  }
+
+  .bgm-mobile-link {
+    padding: 0.65rem 0.85rem;
+    border-radius: 8px;
+    color: #9ca3af;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+  }
+
+  .bgm-mobile-link:hover,
+  .bgm-mobile-link.active {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .bgm-mobile-cta {
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    text-align: center;
+    background: var(--color-brand, #E5172F);
+    color: #ffffff !important;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border-radius: 8px;
+    text-decoration: none;
+  }
+</style>
+
+<script>
+  const btn = document.getElementById("mobile-menu-btn");
+  const menu = document.getElementById("mobile-menu");
+
+  btn?.addEventListener("click", () => {
+    const isHidden = menu?.classList.contains("hidden");
+    menu?.classList.toggle("hidden");
+    btn.setAttribute("aria-expanded", String(isHidden));
+  });
+</script>

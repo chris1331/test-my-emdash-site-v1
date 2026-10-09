@@ -12,13 +12,19 @@ export interface BlogSiteIdentitySettings {
 	favicon?: MediaReference;
 }
 
-const DEFAULT_SITE_TITLE = "My Blog";
-const DEFAULT_SITE_TAGLINE = "Thoughts, stories, and ideas.";
+const DEFAULT_SITE_TITLE = "Burger Gelato Media";
+const DEFAULT_SITE_TAGLINE = "Practical digital marketing insights for small businesses ready to grow smarter, not harder.";
 
 export function resolveBlogSiteIdentity(settings?: BlogSiteIdentitySettings) {
 	return {
 		siteTitle: settings?.title ?? DEFAULT_SITE_TITLE,
 		siteTagline: settings?.tagline ?? DEFAULT_SITE_TAGLINE,
-		siteLogo: settings?.logo?.url ? settings.logo : null,
+		siteLogo: settings?.logo?.url
+			? settings.logo
+			: {
+					url: "/images/logo/logo.png",
+					alt: "Burger Gelato Media",
+					mediaId: "logo",
+				},
 	};
 }

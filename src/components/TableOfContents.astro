@@ -1,0 +1,153 @@
+---
+export interface HeadingItem {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: HeadingItem[];
+}
+
+const { headings } = Astro.props;
+
+const h2s = headings.filter((h) => h.depth === 2);
+---
+
+{
+  h2s.length > 1 && (
+    <nav aria-label="Table of contents" class="toc-box">
+      <p class="toc-heading">
+        <svg
+          class="toc-icon"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M4 6h16M4 10h10M4 14h16M4 18h10"
+          />
+        </svg>
+        Table of Contents
+      </p>
+
+      <ol class="toc-list">
+        {h2s.map((h, i) => (
+          <li class="toc-item">
+            <span class="toc-number">{i + 1}</span>
+            <a href={`#${h.slug}`} class="toc-link">
+              {h.text}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}
+
+<style>
+  .toc-box {
+    margin: 2rem 0;
+    border-radius: var(--radius-lg, 16px);
+    border: 1px solid var(--color-border, #e5e7eb);
+    background: var(--color-bg-subtle, #f9fafb);
+    padding: 1.5rem 1.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+
+  .toc-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-muted, #4b5563);
+    margin-bottom: 1rem;
+  }
+
+  .toc-icon {
+    width: 0.95rem;
+    height: 0.95rem;
+    color: var(--color-brand, #E5172F);
+    flex-shrink: 0;
+  }
+
+  .toc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .toc-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.65rem;
+  }
+
+  .toc-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0.15rem;
+    border-radius: 50%;
+    background: var(--color-surface, #ffffff);
+    border: 1px solid var(--color-border, #e5e7eb);
+    font-size: 0.625rem;
+    font-weight: 700;
+    color: var(--color-text-secondary, #4b5563);
+    transition: all 0.2s ease;
+  }
+
+  .toc-link {
+    font-size: 0.875rem;
+    color: var(--color-text, #111827);
+    font-weight: 500;
+    line-height: 1.45;
+    text-decoration: none;
+    transition: color 0.15s ease;
+  }
+
+  .toc-link:hover {
+    color: var(--color-brand, #E5172F);
+  }
+
+  .toc-item:hover .toc-number {
+    border-color: var(--color-brand, #E5172F);
+    color: var(--color-brand, #E5172F);
+  }
+</style>
+
+<script>
+  const tocLinks = document.querySelectorAll('.toc-box .toc-link');
+  if (tocLinks.length) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const id = entry.target.id;
+            tocLinks.forEach((link) => {
+              const isActive = link.getAttribute('href') === `#${id}`;
+              link.classList.toggle('active', isActive);
+              const num = link.closest('.toc-item')?.querySelector('.toc-number');
+              num?.classList.toggle('active', isActive);
+            });
+          }
+        }
+      },
+      { rootMargin: '-15% 0px -70% 0px' }
+    );
+
+    document.querySelectorAll('article h2[id]').forEach((el) => observer.observe(el));
+  }
+</script>

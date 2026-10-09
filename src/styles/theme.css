@@ -1,33 +1,329 @@
 /*
-  theme.css -- your theme overrides. This is the file to edit to
-  retheme the site.
-
-  Every design token lives in src/styles/tokens.css (colors, type
-  scale, spacing, layout, shadows) with its default value. Override any
-  of them here: declarations in this file are unlayered, so they always
-  beat the @layer base defaults in tokens.css.
-
-  Colors are defined with light-dark(). Overriding with a plain color
-  changes light and dark mode at once; use light-dark(<light>, <dark>)
-  to set different values per mode.
-
-  Webfonts are loaded in astro.config.mjs (--font-body, --font-mono).
-  Swap the loaded font there; use overrides here for system fonts or a
-  separate heading face.
-
-  Example:
-
-  :root {
-    --color-brand: light-dark(#0f766e, #2dd4bf);
-    --font-heading: "Iowan Old Style", Georgia, serif;
-    --radius: 8px;
-  }
+  theme.css -- Theme overrides for Burger Gelato Media
+  Brand Red: #E5172F
+  Brand Dark: #111827
+  Brand Darker: #0D1117
 */
 
 :root {
+  color-scheme: light;
+
+  /* Brand colors */
+  --color-brand: #E5172F;
+  --color-brand-hover: #C01225;
+  --color-brand-dark: #111827;
+  --color-brand-darker: #0D1117;
+  --color-on-brand: #ffffff;
+  --color-brand-ring: rgba(229, 23, 47, 0.25);
+
+  /* High contrast accessible surfaces & text (WCAG AAA) */
+  --color-bg: #ffffff;
+  --color-bg-subtle: #f9fafb;
+  --color-surface: #ffffff;
+  --color-text: #111827; /* Rich deep slate: 16.1:1 contrast on white */
+  --color-text-secondary: #374151; /* Dark gray: 9.0:1 contrast on white */
+  --color-muted: #4b5563; /* Mid gray: 7.0:1 contrast on white */
+  --color-border: #e5e7eb;
+  --color-border-subtle: #f3f4f6;
+
+  /* Layout dimensions */
+  --wide-width: 1180px;
+  --content-width: 760px;
+  --radius: 10px;
+  --radius-lg: 16px;
+
+  /* Typography */
+  --font-weight-heading: 700;
+  --font-weight-display: 800;
+  --leading-relaxed: 1.75;
 }
 
-/* Keep the signed-in Admin link separated from the primary navigation. */
-.nav-admin {
-	margin-inline-start: var(--spacing-5);
+/* Explicit dark theme if activated */
+html.dark {
+  color-scheme: dark;
+  --color-bg: #0d1117;
+  --color-bg-subtle: #111827;
+  --color-surface: #161f2e;
+  --color-text: #f9fafb;
+  --color-text-secondary: #d1d5db;
+  --color-muted: #9ca3af;
+  --color-border: #1f2937;
+  --color-border-subtle: #161f2e;
+}
+
+/* Global selection */
+::selection {
+  background-color: var(--color-brand, #E5172F);
+  color: #ffffff;
+}
+
+/* Fluid base typography */
+html {
+  font-size: clamp(1rem, 0.925rem + 0.35vw, 1.125rem);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-bg, #ffffff);
+  color: var(--color-text, #111827);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+/* Category Badges */
+.category-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  text-decoration: none;
+}
+
+.badge-seo {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.badge-paid-ads {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.badge-digital-strategy {
+  background-color: #f5f3ff;
+  color: #6d28d9;
+  border: 1px solid #ddd6fe;
+}
+
+.badge-marketing-automation {
+  background-color: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
+
+.badge-ai-content {
+  background-color: #ecfeff;
+  color: #0e7490;
+  border: 1px solid #a5f3fc;
+}
+
+.badge-email-marketing {
+  background-color: #fff1f2;
+  color: #be123c;
+  border: 1px solid #fecdd3;
+}
+
+.badge-default {
+  background-color: #f3f4f6;
+  color: #4b5563;
+  border: 1px solid #e5e7eb;
+}
+
+/* Button styles */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1.35rem;
+  background: var(--color-brand, #E5172F);
+  color: #ffffff !important;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: background 0.15s ease, transform 0.15s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: var(--color-brand-hover, #C01225);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.65rem 1.35rem;
+  background: #ffffff;
+  color: #1f2937 !important;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+
+.btn-secondary:hover {
+  border-color: #9ca3af;
+  background: #f9fafb;
+}
+
+/* Article & Content Prose Styling */
+.prose-post {
+  max-width: var(--content-width, 760px);
+  margin: 0 auto;
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  color: #374151;
+}
+
+.prose-post p {
+  margin: 1.35rem 0;
+  color: #374151;
+}
+
+.prose-post a {
+  color: var(--color-brand, #E5172F);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.prose-post a:hover {
+  text-decoration: underline;
+}
+
+.prose-post h2 {
+  font-size: 1.625rem;
+  font-weight: 700;
+  color: #111827;
+  margin-top: 2.75rem;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+}
+
+.prose-post h3 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #111827;
+  margin-top: 2.25rem;
+  margin-bottom: 0.85rem;
+  line-height: 1.35;
+}
+
+.prose-post h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.prose-post ul,
+.prose-post ol {
+  margin: 1.35rem 0;
+  padding-left: 1.5rem;
+}
+
+.prose-post li {
+  margin: 0.5rem 0;
+  color: #374151;
+}
+
+.prose-post blockquote {
+  border-left: 4px solid var(--color-brand, #E5172F);
+  background: #f9fafb;
+  border-radius: 0 12px 12px 0;
+  padding: 1.15rem 1.5rem;
+  margin: 1.75rem 0;
+  color: #4b5563;
+  font-style: normal;
+}
+
+.prose-post blockquote p {
+  margin: 0;
+}
+
+.prose-post code {
+  background: #f3f4f6;
+  color: #1f2937;
+  border-radius: 6px;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.875em;
+  font-family: var(--font-mono, monospace);
+}
+
+.prose-post pre {
+  background: #111827;
+  color: #f3f4f6;
+  border-radius: var(--radius-lg, 16px);
+  padding: 1.25rem 1.5rem;
+  margin: 1.75rem 0;
+  overflow-x: auto;
+}
+
+.prose-post pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  border-radius: 0;
+}
+
+.prose-post table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  font-size: 0.9375rem;
+}
+
+.prose-post th,
+.prose-post td {
+  border: 1px solid #e5e7eb;
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+.prose-post th {
+  background: #f9fafb;
+  font-weight: 600;
+  color: #111827;
+}
+
+.prose-post img {
+  border-radius: var(--radius-lg, 16px);
+  margin: 2rem auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+.prose-post figure {
+  margin: 2rem auto;
+  text-align: center;
+}
+
+.prose-post figcaption {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin-top: 0.5rem;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f3f4f6;
+}
+::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
 }
